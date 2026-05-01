@@ -1,0 +1,98 @@
+Delivered-To: philipalex99@gmail.com
+Received: by 2002:aa6:c8ca:0:b0:330:5ce6:f5f3 with SMTP id q10csp381414lkr;
+        Sat, 4 Apr 2026 01:03:00 -0700 (PDT)
+X-Forwarded-Encrypted: i=2; AJvYcCX3al7WZqdASrGIEUc45TwAuBALf3hkjhTQPDamXbvU46oG7RqyB1epKian5/MuCFm0wf614RIAiyFXD84=@gmail.com
+X-Received: by 2002:a05:6a00:2e22:b0:7e8:4471:ae55 with SMTP id d2e1a72fcca58-82d0db72eb0mr5828895b3a.33.1775289779768;
+        Sat, 04 Apr 2026 01:02:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1775289779; cv=none;
+        d=google.com; s=arc-20240605;
+        b=OwC7odMPuLWa//osQtMtobekuKIXIxRQe3182XOyhZcFZ066QoaDnFPJzngTtgj5yl
+         8AeafSuOBTB5Cvjhe17anIBEglWQnGK43fgjgjbFVe2+GiGMEmWdcjkiicEFDx66lgmD
+         wTrzgXrE8FP2ZgMtc4iAqQ3rcgGykrZdcAbAgH075a0G6AVr9Iahnxkp8Y4dycXuboUF
+         c+aub8V5DgRN+J8qGPSmlr0MaEKevuXP9ZXAIlwO+yyTbKMFaCSBva/61k/JqFLXVw4/
+         OOMxIS/UiOgb595aGxSeYZylIavlkQUu5My1srngV6DCpLDYLdWW2MyV9GHLThUP184f
+         gS5w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=dkim-signature:content-transfer-encoding:mime-version:date:subject
+         :to:from:message-id;
+        bh=yu8TpsPv2GJqyf7VkZuWNJbkIRzc8KZCxmbW+XbU4II=;
+        fh=YnXVcy4c4GuGqOmZ6wPat0+++GRS/K/EdCk55TKjdlo=;
+        b=X6yAt/WbFGDaT8h3wgmAZA0Jru9pxytZfnXOXc6aB+dffcFnpbOl8wFKHfDmSIjcpb
+         ggzdxCLn1+dugJfviVUnD5rgnvJLvmrgZJoF9QdEI36OS0c7IZZ4TKHmjsxEzyhspyW7
+         avIWReveK94YS29Gy15aD0CKP0rqtUaa8y24GCQQ//Wc14Xp7lbzbCQwjdTPKKIYXPoD
+         tOxewo+9Vyky2UOnUV+ZnvHkTVKiqBQKtRiYnHWHXk3L/inxMnu4bb7HE28dxLUuG5Xg
+         OgzFM7Zbf8UfhJi+YS/EMBEayvEVjg/NeClRm7byP8eylTAC6+SFiEniXVN4C93C7Y83
+         LIIA==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@kawachi.zaq.ne.jp header.s=default-1th84yt82rvi header.b="ZQF9IA/Q";
+       spf=pass (google.com: domain of kfixc@kawachi.zaq.ne.jp designates 222.227.81.164 as permitted sender) smtp.mailfrom=kfixc@kawachi.zaq.ne.jp;
+       dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=kawachi.zaq.ne.jp
+Return-Path: <kfixc@kawachi.zaq.ne.jp>
+Received: from mta-sp-e04.jcom.zaq.ne.jp (mta-sp-e04.jcom.zaq.ne.jp. [222.227.81.164])
+        by mx.google.com with ESMTPS id d2e1a72fcca58-82cf9b35b89si17931733b3a.47.2026.04.04.01.02.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Apr 2026 01:02:59 -0700 (PDT)
+Received-SPF: pass (google.com: domain of kfixc@kawachi.zaq.ne.jp designates 222.227.81.164 as permitted sender) client-ip=222.227.81.164;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@kawachi.zaq.ne.jp header.s=default-1th84yt82rvi header.b="ZQF9IA/Q";
+       spf=pass (google.com: domain of kfixc@kawachi.zaq.ne.jp designates 222.227.81.164 as permitted sender) smtp.mailfrom=kfixc@kawachi.zaq.ne.jp;
+       dmarc=pass (p=NONE sp=NONE dis=NONE) header.from=kawachi.zaq.ne.jp
+Received: from mta-or-e02.jcom.zaq.ne.jp by osmta0010-jc.im.kddi.ne.jp
+          with ESMTP
+          id <20260404080244574.FQDL.52163.mta-or-e02.jcom.zaq.ne.jp@mta-sp-e04.jcom.zaq.ne.jp>;
+          Sat, 4 Apr 2026 17:02:44 +0900
+Received: from ldaro by omta0010-jc.im.kddi.ne.jp with SMTP
+          id <20260404080244062.TXWH.46984.ldaro@mta-or-e02.jcom.zaq.ne.jp>;
+          Sat, 4 Apr 2026 17:02:44 +0900
+Message-ID: <82b6ff54a0644e4043e9a52662a7b9019e65@kawachi.zaq.ne.jp>
+From: "You've been HACKED" <kfixc@kawachi.zaq.ne.jp>
+To: you <you>
+Subject: Information about your online security
+Date: Sat, 4 Apr 2026 01:02:27 -0700
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kawachi.zaq.ne.jp; s=default-1th84yt82rvi; t=1775289764;
+ bh=yu8TpsPv2GJqyf7VkZuWNJbkIRzc8KZCxmbW+XbU4II=;
+ h=From:To:Subject:Date;
+ b=ZQF9IA/QqjmnQIhDS+FSnOl5noiYjEoTx9Zp0gaGc0/IW8qgIp0Wdox/OmZI2nvBuTMNrXA/
+ PpCDZGDjcTgZklP8tyDjqXzHub8ExLqxlT3mvxznRGEGncNXdDk1ILygFuJl4Q85GYUtzqOHR0
+ HPs4Ddmjj7x0xF51V1Jc8DSO8EcOWmd5r+e8EF5G5Ccy2j33WL46+szi67gtzMM0uwuvb3GDFe
+ zUYg9yxxIXg99cDVSbIAGcVE90MHrMe7A1qZNkHZgQH5LnXsJQHjz34s/l3wP0erDVQr8RfpPF
+ Nlw2ZyNWn5PCO2W47qzBN55/HTgm6IHmpanDLU0TXbiSZMKQ==
+
+Hello,
+
+We are ShinyHunters hacking group.
+We've known each other for a while, at least we know you.
+A few months ago, we gained access to your devices and started monitoring your online activities.
+
+What happened:
+We got access to the database CarGurus.com where you had an account with and easily accessed your e-mail.
+You weren't very careful about the links you opened.
+A week later, we installed an exploit on your devices including your phone, giving us access to your microphone,
+camera, keyboard, and all your data.
+We have your photos,browsing history, conversations, and contact list.
+
+Besides other things, we discovered that you frequently visit adult websites and watch explicit videos.
+We managed to record you and created videos of you pleasuring yourself.
+With a few clicks, we can share these videos with your friends,
+colleagues, and family or even make them public.
+
+Proposal:
+Send us $2000 in Bitcoin to the following wallet:
+1MHegk8uSU59iAgzJ738S4amcPCsfYZS81
+
+We'll delete everything immediately. 
+You have 48 hours from the moment you opened this e-mail.
+Once the payment is received, we'll remove the malware from your devices. 
+
+What you should NOT do:  
+Do not reply (email is sent from a hacked account).
+Do not contact the police or anyone else—we'll release the videos along with other stuff all over the internet.
+Do not try to reset your devices—everything is stored on remote servers.
+
+What you don’t need to worry about:
+Will see your payment immediately—The wallet is generated specially for you.
+Will not share your videos or other things after payment—There is no reason to keep causing problems.
