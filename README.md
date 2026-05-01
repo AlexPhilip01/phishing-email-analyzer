@@ -1,4 +1,4 @@
-# Phishing Email Analyzer
+Phishing Email Analyzer
 
 A Python-based tool that analyzes `.eml` email files to detect 
 phishing indicators, calculate a risk score, and generate reports.
@@ -7,7 +7,7 @@ Built and run in Google Colab — no local setup needed.
 
 ---
 
-## Features
+Features
 
 - **Header Analysis** — extracts From, To, Subject, Reply-To, Date
 - **IP Extraction** — pulls IPs from Received headers with false positive filtering
@@ -20,7 +20,7 @@ Built and run in Google Colab — no local setup needed.
 
 ---
 
-## Risk Scoring
+Risk Scoring
 
 | Indicator                  | Points |
 |----------------------------|--------|
@@ -39,7 +39,7 @@ Built and run in Google Colab — no local setup needed.
 
 ---
 
-## How to Run
+How to Run
 
 1. Open the notebook in [Google Colab](https://colab.research.google.com)
 2. Run cells 1–9 top to bottom to load all functions
@@ -49,7 +49,7 @@ Built and run in Google Colab — no local setup needed.
 
 ---
 
-## Project Structure
+Project Structure
 
 | Cell | Purpose |
 |------|---------|
@@ -68,4 +68,21 @@ Built and run in Google Colab — no local setup needed.
 
 ---
 
-## Example Output
+Terminal Report
+PHISHING EMAIL ANALYSIS REPORT
+📧 From:     "You've been HACKED" kfixc@kawachi.zaq.ne.jp
+Subject:  Information about your online security
+🌐 IP ADDRESSES
+222.227.81.164  —  Public IP
+🔍 KEYWORDS
+[FEAR]     →  hacked
+[URGENCY]  →  immediately
+[FINANCIAL]→  payment
+📊 RISK SCORE :  60 / 100
+VERDICT    :  🟡 MEDIUM RISK — Suspicious, review carefully
+
+PDF Report
+![Sample PDF Report](output.png)
+
+
+
