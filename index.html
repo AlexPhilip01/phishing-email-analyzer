@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -596,15 +596,50 @@ function getDomain(f) { const m = (f||'').match(/@([^>)\s]+)/); return m ? m[1].
 
 function analyzeHeaders(headers, receivedHeaders) {
   const findings = [];
-  const fromDomain = getDomain(headers['from']||''), replyDomain = getDomain(headers['reply-to']||'');
+  const from = headers['from'] || '';
+  const fromDomain = getDomain(from);
+  const replyDomain = getDomain(headers['reply-to']||'');
+  const subject = (headers['subject']||'').toLowerCase();
   const hasReplyMismatch = !!(replyDomain && fromDomain && fromDomain !== replyDomain);
+
   if (hasReplyMismatch) findings.push({ text:`Reply-To domain (${replyDomain}) differs from From domain (${fromDomain})`, severity:'high' });
-  const alarms = ['urgent','suspended','compromised','verify','immediately','action required','warning','alert','expire','limited time'];
-  const hits = alarms.filter(w => (headers['subject']||'').toLowerCase().includes(w));
+
+  // Alarming display names
+  const alarmNames = ['hacked','hack','security alert','warning','urgent','compromised','breached','ransomware','bitcoin','payment required'];
+  const displayNameMatch = from.match(/^"?([^"<]+)"?\s*</);
+  if (displayNameMatch) {
+    const displayName = displayNameMatch[1].toLowerCase();
+    const alarmHits = alarmNames.filter(w => displayName.includes(w));
+    if (alarmHits.length) findings.push({ text:`Alarming display name in From: "${displayNameMatch[1].trim()}"`, severity:'high' });
+  }
+
+  // Subject alarms
+  const subjectAlarms = ['urgent','suspended','compromised','verify','immediately','action required','warning','alert','expire','limited time','hacked','security','payment','bitcoin','malware','virus','account'];
+  const hits = subjectAlarms.filter(w => subject.includes(w));
   if (hits.length) findings.push({ text:`Alarm words in Subject: ${hits.join(', ')}`, severity:'high' });
+
+  // Typosquatting
   const typos = [/paypa[^l]/,/arnazon/,/micros0ft/,/g00gle/,/app[l1]e/];
-  if (typos.some(p => p.test((headers['from']||'').toLowerCase()))) findings.push({ text:'Possible typosquatting detected in From address', severity:'high' });
+  if (typos.some(p => p.test(from.toLowerCase()))) findings.push({ text:'Possible typosquatting detected in From address', severity:'high' });
+
+  // Display name vs domain mismatch (e.g. "PayPal" but domain is not paypal.com)
+  const brands = ['paypal','amazon','google','apple','microsoft','netflix','facebook','instagram','bank','chase','wells fargo'];
+  if (displayNameMatch) {
+    const dn = displayNameMatch[1].toLowerCase();
+    const brandFound = brands.find(b => dn.includes(b));
+    if (brandFound && fromDomain && !fromDomain.includes(brandFound)) {
+      findings.push({ text:`Display name claims to be "${brandFound}" but sending domain is "${fromDomain}"`, severity:'high' });
+    }
+  }
+
   if (!receivedHeaders.length) findings.push({ text:'No Received headers — unusual for legitimate email', severity:'medium' });
+
+  // Mismatched To field
+  const to = (headers['to']||'').toLowerCase();
+  if (to === 'you <you>' || to === 'undisclosed-recipients' || to.includes('undisclosed')) {
+    findings.push({ text:'Vague or hidden recipient in To field — common in mass phishing/scam emails', severity:'high' });
+  }
+
   return { findings, hasReplyMismatch, fromDomain, replyDomain };
 }
 
@@ -626,13 +661,56 @@ function extractIPs(receivedHeaders) {
 function detectKeywords(text) {
   const low = text.toLowerCase();
   const cats = {
-    urgency:['urgent','immediately','expire','suspended','within 24','act now','limited time','deadline','hours remaining'],
-    financial:['free','prize','lottery','winner','reward','cash','wire transfer','bank account','investment','million dollars','credit card','claim your'],
-    threat:['suspended','terminated','legal action','lawsuit','arrested','penalty','blacklist','deactivated','account closed'],
-    credential:['password','social security','ssn','verify','confirm your','login','credentials','authenticate','pin number'],
+    urgency:[
+      'urgent','immediately','expire','suspended','within 24','act now','limited time',
+      'deadline','hours remaining','48 hours','24 hours','72 hours','you have',
+      'time is running','do not delay','act fast'
+    ],
+    financial:[
+      'free','prize','lottery','winner','reward','cash','wire transfer','bank account',
+      'investment','million dollars','credit card','claim your','bitcoin','btc',
+      'cryptocurrency','wallet','send us','payment','transfer','$','€','£',
+      'send money','pay now','deposit'
+    ],
+    threat:[
+      'suspended','terminated','legal action','lawsuit','arrested','penalty',
+      'blacklist','deactivated','account closed','hacked','hack','malware',
+      'virus','spyware','exploit','ransomware','delete everything','release',
+      'share your','expose','publish','destroy','damage','harm','do not contact',
+      'do not reply','do not tell','do not call police','contact the police',
+      'we will release','we will send','we will share','make them public',
+      'your friends','your family','your colleagues'
+    ],
+    credential:[
+      'password','social security','ssn','verify','confirm your','login',
+      'credentials','authenticate','pin number','your account','access to your',
+      'gained access','your device','your phone','your camera','your microphone',
+      'monitoring','recorded you','videos of you','your photos','your data',
+      'browsing history','contact list'
+    ],
+    extortion:[
+      'sextortion','explicit','adult website','adult content','pleasuring yourself',
+      'intimate video','private video','compromising video','nude','naked',
+      'shinyh','hacking group','we know you','we have been watching',
+      'we installed','remote access','we monitor','your webcam','recorded',
+      'bitcoin address','crypto address','btc address','wallet address'
+    ],
   };
   const found = {};
-  Object.entries(cats).forEach(([cat, words]) => { const h = words.filter(w => low.includes(w)); if (h.length) found[cat] = h; });
+  Object.entries(cats).forEach(([cat, words]) => {
+    const h = words.filter(w => low.includes(w));
+    if (h.length) found[cat] = h;
+  });
+
+  // Detect Bitcoin wallet addresses
+  const btcWallet = text.match(/\b[13][a-zA-Z0-9]{25,34}\b/g);
+  if (btcWallet) {
+    found.extortion = found.extortion || [];
+    if (!found.extortion.includes('bitcoin wallet address')) {
+      found.extortion.push(`bitcoin wallet: ${btcWallet[0]}`);
+    }
+  }
+
   return found;
 }
 
@@ -654,12 +732,16 @@ function scanURLs(text) {
 
 function calcScore(hf, ips, kw, urls) {
   let s = 0;
-  s += Math.min(hf.length * 15, 35);
-  s += ips.filter(i=>i.isPrivate).length * 10;
-  const w = {urgency:8,financial:10,threat:12,credential:15};
-  Object.entries(kw).forEach(([cat,words]) => { s += Math.min(words.length*(w[cat]||5), 20); });
+  s += Math.min(hf.length * 15, 40);
+  s += ips.filter(i=>i.isPrivate).length * 8;
+  const w = {urgency:6, financial:8, threat:10, credential:10, extortion:20};
+  Object.entries(kw).forEach(([cat,words]) => {
+    s += Math.min(words.length * (w[cat]||5), 25);
+  });
   urls.forEach(u => { s += u.flags.length * 8; });
-  return { score: Math.min(s,100), level: s>=60?'HIGH':s>=30?'MEDIUM':'LOW' };
+  // Bonus: if extortion category exists, guarantee HIGH
+  if (kw.extortion && kw.extortion.length >= 2) s = Math.max(s, 75);
+  return { score: Math.min(s, 100), level: s>=60?'HIGH':s>=30?'MEDIUM':'LOW' };
 }
 
 function riskColor(level) { return level==='HIGH'?'#be123c':level==='MEDIUM'?'#b45309':'#15803d'; }
@@ -752,7 +834,7 @@ function renderIPs(ips) {
 
 function renderKeywords(kw) {
   if (!Object.keys(kw).length) return `<div class="card"><div class="card-header"><div class="card-header-icon icon-green">${icon('type')}</div><h3>Keyword Detection</h3></div><div class="card-body"><p class="no-findings">No phishing keywords detected.</p></div></div>`;
-  const meta = {urgency:{label:'Urgency',ico:'clock',cls:'icon-red'},financial:{label:'Financial Lure',ico:'dollar',cls:'icon-yellow'},threat:{label:'Threat',ico:'zap',cls:'icon-red'},credential:{label:'Credential Harvesting',ico:'key',cls:'icon-indigo'}};
+  const meta = {urgency:{label:'Urgency',ico:'clock',cls:'icon-red'},financial:{label:'Financial Lure',ico:'dollar',cls:'icon-yellow'},threat:{label:'Threat',ico:'zap',cls:'icon-red'},credential:{label:'Credential Harvesting',ico:'key',cls:'icon-indigo'},extortion:{label:'Extortion / Sextortion',ico:'warning',cls:'icon-red'}};
   return Object.entries(kw).map(([cat,words])=>{const m=meta[cat]||{label:cat,ico:'type',cls:'icon-purple'};return`<div class="card"><div class="card-header"><div class="card-header-icon ${m.cls}">${icon(m.ico)}</div><h3>${m.label}</h3><div class="count">${words.length} match(es)</div></div><div class="card-body"><div class="chip-wrap">${words.map(w=>`<span class="chip chip-${cat}">${w}</span>`).join('')}</div></div></div>`;}).join('');
 }
 
