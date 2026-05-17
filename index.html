@@ -161,7 +161,7 @@ textarea.eml-input::placeholder{color:var(--muted2)}
 }
 .tab.active .tab-count{background:var(--primary-light);color:var(--primary)}
 
-.content{flex:1;overflow-y:auto;padding:24px;min-height:0}
+.content{flex:1;overflow-y:auto;padding:24px;min-height:0;width:100%}
 .tab-pane{display:none;height:100%}
 .tab-pane.active{display:flex;flex-direction:column}
 
@@ -182,7 +182,7 @@ textarea.eml-input::placeholder{color:var(--muted2)}
 /* ── Cards ── */
 .card{
   background:var(--white);border:1px solid var(--border);
-  border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;
+  border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;width:100%;
 }
 .card-header{
   padding:14px 18px;border-bottom:1px solid var(--border);
@@ -213,7 +213,7 @@ textarea.eml-input::placeholder{color:var(--muted2)}
   border-radius:var(--radius);padding:28px;margin-bottom:16px;
   display:flex;align-items:center;gap:28px;flex-wrap:wrap;
   box-shadow:var(--shadow-lg);
-  position:relative;overflow:hidden;
+  position:relative;overflow:hidden;width:100%;
 }
 .score-hero::before{
   content:'';position:absolute;right:-60px;top:-60px;
@@ -322,9 +322,138 @@ iframe.report-frame{width:100%;flex:1;border:none;background:#fff;min-height:0;d
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
 
-@media(max-width:900px){
-  .sidebar{width:260px}
+/* ── Mobile bottom nav ── */
+.mob-nav{display:none}
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(30,27,58,.45);z-index:300;backdrop-filter:blur(2px)}
+.mob-drawer{
+  position:fixed;bottom:0;left:0;right:0;z-index:400;
+  background:var(--white);border-top:1px solid var(--border);
+  border-radius:18px 18px 0 0;
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);
+  box-shadow:0 -8px 32px rgba(109,40,217,.15);
+  max-height:88vh;overflow-y:auto;
+}
+.mob-drawer.open{transform:translateY(0)}
+.mob-drawer-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 6px}
+.mob-drawer-title{font-size:13px;font-weight:700;color:var(--text);padding:0 20px 12px;border-bottom:1px solid var(--border)}
+.mob-drawer-content{padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+
+/* ── Tablet ── */
+@media(max-width:1024px){
   .stats-row{grid-template-columns:repeat(2,1fr)}
+  .sidebar{width:260px}
+}
+
+/* ── Mobile ── */
+@media(max-width:700px){
+  html,body{overflow:hidden;height:100%}
+
+  .topbar{padding:0 16px;height:54px}
+  .brand-tagline{display:none}
+  .badge-online span:not(.badge-dot){display:none}
+  .badge-online{padding:4px 8px}
+
+  /* Stack layout vertically on mobile */
+  .layout{flex-direction:column;overflow:hidden}
+
+  /* Sidebar hidden on mobile — replaced by bottom drawer */
+  .sidebar{display:none}
+
+  /* Right panel fills everything */
+  .right-panel{height:100%;flex:1;min-height:0}
+
+  /* Tabs hidden — replaced by mobile nav */
+  .tabbar{display:none}
+
+  /* Content fills screen minus topbar and bottom nav */
+  .content{
+    padding:16px;
+    height:calc(100% - 60px);
+    overflow-y:auto;
+  }
+
+  /* Score hero compact */
+  .score-hero{padding:18px;gap:14px;flex-wrap:nowrap}
+  .score-ring{width:70px;height:70px}
+  .score-num{font-size:20px}
+  .score-details h2{font-size:15px}
+  .score-details p{font-size:11px}
+  .score-meta{font-size:10px}
+  .risk-pill{font-size:10px;padding:5px 12px;letter-spacing:.4px}
+
+  .stats-row{grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+  .stat-card{padding:10px 12px}
+  .stat-val{font-size:18px}
+  .stat-label{font-size:10px}
+
+  .card-header{padding:10px 14px}
+  .card-body{padding:12px 14px;gap:6px}
+
+  .hkey{min-width:70px;font-size:9px}
+  .hval{font-size:11px}
+
+  .finding-text{font-size:12px}
+
+  /* Mobile bottom nav bar */
+  .mob-nav{
+    display:flex;
+    position:fixed;bottom:0;left:0;right:0;z-index:200;
+    background:var(--white);border-top:1px solid var(--border);
+    box-shadow:0 -2px 12px rgba(109,40,217,.1);
+    height:60px;align-items:stretch;
+  }
+  .mob-nav-btn{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;font-size:9px;font-weight:600;color:var(--muted);
+    background:none;border:none;cursor:pointer;padding:6px 4px;
+    text-transform:uppercase;letter-spacing:.5px;transition:color .15s;
+    font-family:'Inter',sans-serif;
+  }
+  .mob-nav-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .mob-nav-btn.active{color:var(--primary)}
+  .mob-nav-btn.active svg{stroke:var(--primary)}
+  .mob-nav-more{
+    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;font-size:9px;font-weight:600;color:var(--muted);
+    background:none;border:none;cursor:pointer;padding:6px 4px;
+    text-transform:uppercase;letter-spacing:.5px;font-family:'Inter',sans-serif;
+  }
+  .mob-nav-more svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+  /* Extra padding so content doesn't hide behind bottom nav */
+  .content{padding-bottom:72px}
+
+  /* Mobile input panel (drawer) */
+  .mob-overlay{display:block}
+  .mob-drawer{display:block}
+
+  /* Drawer sections */
+  .mob-drawer-section{border-bottom:1px solid var(--border);padding:16px 20px}
+  .mob-drawer-section:last-child{border:none}
+
+  /* Full width buttons in drawer */
+  .mob-drawer .btn-primary{width:100%}
+  .mob-drawer textarea.eml-input{min-height:120px}
+
+  /* Analyze FAB button */
+  .fab{
+    display:flex;
+    position:fixed;bottom:70px;right:16px;z-index:250;
+    width:52px;height:52px;border-radius:50%;
+    background:linear-gradient(135deg,#6d28d9,#5b21b6);
+    color:#fff;border:none;cursor:pointer;
+    align-items:center;justify-content:center;
+    box-shadow:0 4px 16px rgba(109,40,217,.45);
+    transition:transform .15s,box-shadow .15s;
+  }
+  .fab:active{transform:scale(.93)}
+  .fab svg{width:22px;height:22px;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+  /* Hide desktop-only analyze button on mobile */
+  .desktop-analyze{display:none}
+
+  #pane-report .report-toolbar{padding:12px 16px;flex-wrap:wrap;gap:8px}
+  #pane-report .report-toolbar span{display:none}
 }
 </style>
 </head>
@@ -450,9 +579,86 @@ Email body goes here..."></textarea>
     </div>
   </div>
 
+</div><!-- /layout -->
+
+<!-- Mobile bottom nav -->
+<nav class="mob-nav" id="mobNav">
+  <button class="mob-nav-btn active" id="mbn-overview" onclick="mobTab('overview')">
+    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    Overview
+  </button>
+  <button class="mob-nav-btn" id="mbn-headers" onclick="mobTab('headers')">
+    <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    Headers
+  </button>
+  <button class="mob-nav-btn" id="mbn-keywords" onclick="mobTab('keywords')">
+    <svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+    Keywords
+  </button>
+  <button class="mob-nav-btn" id="mbn-urls" onclick="mobTab('urls')">
+    <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+    URLs
+  </button>
+  <button class="mob-nav-more" onclick="openMobMore()">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    More
+  </button>
+</nav>
+
+<!-- Mobile FAB -->
+<button class="fab" id="mobFab" onclick="openMobInput()">
+  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+</button>
+
+<!-- Mobile overlay -->
+<div class="mob-overlay" id="mobOverlay" onclick="closeMobDrawers()"></div>
+
+<!-- Mobile input drawer -->
+<div class="mob-drawer" id="mobInputDrawer">
+  <div class="mob-drawer-handle"></div>
+  <div class="mob-drawer-title">Analyze Email</div>
+  <div class="mob-drawer-content">
+    <div style="margin-bottom:4px">
+      <div class="section-label" style="margin-bottom:8px">Upload .eml file</div>
+      <div class="upload-zone" id="uploadZoneMob">
+        <input type="file" id="fileInputMob" accept=".eml,.txt">
+        <div class="upload-zone-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+        <p>Tap to browse <b>.eml file</b></p>
+      </div>
+    </div>
+    <div>
+      <div class="section-label" style="margin-bottom:8px">— or paste raw email —</div>
+      <textarea class="eml-input" id="emlTextMob" placeholder="Paste email source here..." rows="5"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="runMobAnalysis()">
+      <svg style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Analyze Email
+    </button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sample" style="flex:1" onclick="loadDemoMob()">Load Sample</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeMobDrawers()">Cancel</button>
+    </div>
+  </div>
 </div>
 
-<script>
+<!-- Mobile more drawer -->
+<div class="mob-drawer" id="mobMoreDrawer">
+  <div class="mob-drawer-handle"></div>
+  <div class="mob-drawer-title">More</div>
+  <div class="mob-drawer-content">
+    <button class="btn btn-ghost" style="width:100%;justify-content:flex-start;gap:12px;padding:12px 16px" onclick="mobTab('ips');closeMobDrawers()">
+      <svg style="width:16px;height:16px;stroke:var(--primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+      IP Forensics
+    </button>
+    <button class="btn btn-ghost" style="width:100%;justify-content:flex-start;gap:12px;padding:12px 16px" onclick="mobTab('report');closeMobDrawers()">
+      <svg style="width:16px;height:16px;stroke:var(--primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Report &amp; Download
+    </button>
+    <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
+      <div class="info-box">PhishGuard analyzes email headers, IPs, keywords and URLs for phishing indicators. Educational use only.</div>
+    </div>
+  </div>
+</div>
 const TABS = ['overview','headers','ips','keywords','urls','report'];
 
 function switchTab(name) {
@@ -887,6 +1093,81 @@ function printReport() { const f = document.getElementById('reportFrame'); if (f
 
 // Fix the analyze button icon on load
 document.getElementById('analyzeBtn').innerHTML = `<svg style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> Analyze Email`;
+
+// ── Mobile functions ──────────────────────────────────────
+const MOB_NAV_TABS = ['overview','headers','keywords','urls'];
+
+function mobTab(name) {
+  // Switch the main tab pane
+  switchTab(name);
+  // Highlight mobile nav
+  MOB_NAV_TABS.forEach(t => {
+    const btn = document.getElementById('mbn-'+t);
+    if (btn) btn.classList.toggle('active', t === name);
+  });
+}
+
+function openMobInput() {
+  // Sync desktop textarea to mobile drawer
+  const mob = document.getElementById('emlTextMob');
+  const desk = document.getElementById('emlText');
+  if (desk.value) mob.value = desk.value;
+  document.getElementById('mobOverlay').style.display = 'block';
+  document.getElementById('mobInputDrawer').classList.add('open');
+  document.getElementById('mobMoreDrawer').classList.remove('open');
+}
+
+function openMobMore() {
+  document.getElementById('mobOverlay').style.display = 'block';
+  document.getElementById('mobMoreDrawer').classList.add('open');
+  document.getElementById('mobInputDrawer').classList.remove('open');
+}
+
+function closeMobDrawers() {
+  document.getElementById('mobOverlay').style.display = 'none';
+  document.getElementById('mobInputDrawer').classList.remove('open');
+  document.getElementById('mobMoreDrawer').classList.remove('open');
+}
+
+// Mobile file input
+const fileInputMob = document.getElementById('fileInputMob');
+const uploadZoneMob = document.getElementById('uploadZoneMob');
+if (fileInputMob) {
+  fileInputMob.addEventListener('change', e => {
+    if (e.target.files[0]) {
+      const r = new FileReader();
+      r.onload = ev => {
+        document.getElementById('emlTextMob').value = ev.target.result;
+        document.getElementById('emlText').value = ev.target.result;
+      };
+      r.readAsText(e.target.files[0]);
+    }
+  });
+}
+
+function loadDemoMob() {
+  loadDemo(); // populate desktop textarea
+  document.getElementById('emlTextMob').value = document.getElementById('emlText').value;
+}
+
+function runMobAnalysis() {
+  // Sync mobile textarea to desktop and run
+  const mobVal = document.getElementById('emlTextMob').value.trim();
+  if (mobVal) document.getElementById('emlText').value = mobVal;
+  closeMobDrawers();
+  setTimeout(() => {
+    runAnalysis();
+    mobTab('overview');
+  }, 300);
+}
+
+// Sync desktop textarea changes to mobile
+document.getElementById('emlText').addEventListener('input', () => {
+  const mob = document.getElementById('emlTextMob');
+  if (mob) mob.value = document.getElementById('emlText').value;
+});
+
 </script>
 </body>
 </html>
+      
