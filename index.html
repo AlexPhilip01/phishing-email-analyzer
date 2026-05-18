@@ -584,33 +584,48 @@ Or: You've won a $1000 gift card! Claim now: http://prize-claim.xyz/win?id=9482"
   <button class="mob-nav-btn active" id="mbn-overview" onclick="mobTab('overview')">
     <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Overview
   </button>
-  <button class="mob-nav-btn" id="mbn-headers" onclick="mobTab('headers')">
-    <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Headers
-  </button>
   <button class="mob-nav-btn" id="mbn-keywords" onclick="mobTab('keywords')">
     <svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Keywords
   </button>
   <button class="mob-nav-btn" id="mbn-urls" onclick="mobTab('urls')">
     <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>URLs
   </button>
+  <button class="mob-nav-btn" id="mbn-sms" onclick="mobSmsMode()">
+    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>SMS
+  </button>
   <button class="mob-nav-more" onclick="openMobMore()">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>More
   </button>
 </nav>
 
-<!-- Mobile FAB -->
+<!-- Mobile FAB — changes icon based on mode -->
 <button class="fab" id="mobFab" onclick="openMobInput()" style="display:none">
-  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+  <svg id="mobFabIcon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
 </button>
 
 <!-- Mobile overlay -->
 <div class="mob-overlay" id="mobOverlay" style="display:none" onclick="closeMobDrawers()"></div>
 
-<!-- Mobile input drawer -->
+<!-- Mobile Email drawer -->
 <div class="mob-drawer" id="mobInputDrawer">
   <div class="mob-drawer-handle"></div>
-  <div class="mob-drawer-title">Analyze Email</div>
-  <div class="mob-drawer-content">
+  <!-- Mode toggle inside drawer -->
+  <div style="padding:12px 20px 0">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mobModeEmailBtn" onclick="mobDrawerMode('email')">
+        <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email
+      </button>
+      <button class="mode-btn" id="mobModeSmsBtn" onclick="mobDrawerMode('sms')">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        SMS
+      </button>
+    </div>
+  </div>
+
+  <!-- Email content -->
+  <div id="mobEmailContent" class="mob-drawer-content">
+    <div class="mob-drawer-title" style="padding:8px 0 4px;border:none;font-size:12px;color:var(--muted)">Analyze Email</div>
     <div>
       <div class="section-label" style="margin-bottom:8px">Upload .eml file</div>
       <div class="upload-zone" id="uploadZoneMob">
@@ -632,6 +647,26 @@ Or: You've won a $1000 gift card! Claim now: http://prize-claim.xyz/win?id=9482"
       <button class="btn btn-ghost" style="flex:1" onclick="closeMobDrawers()">Cancel</button>
     </div>
   </div>
+
+  <!-- SMS content -->
+  <div id="mobSmsContent" class="mob-drawer-content" style="display:none">
+    <div class="mob-drawer-title" style="padding:8px 0 4px;border:none;font-size:12px;color:var(--muted)">Analyze SMS Message</div>
+    <div>
+      <div class="section-label" style="margin-bottom:8px">Paste SMS message</div>
+      <textarea class="eml-input" id="smsMobText" rows="6" placeholder="Paste suspicious text message here...
+
+Example:
+URGENT: Your bank account is suspended. Verify: http://bit.ly/secure-bank"></textarea>
+    </div>
+    <button class="btn btn-primary" onclick="runMobSmsAnalysis()">
+      <svg style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Analyze SMS
+    </button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sample" style="flex:1" onclick="loadSmsMob()">Load Sample</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="closeMobDrawers()">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <!-- Mobile more drawer -->
@@ -639,14 +674,17 @@ Or: You've won a $1000 gift card! Claim now: http://prize-claim.xyz/win?id=9482"
   <div class="mob-drawer-handle"></div>
   <div class="mob-drawer-title">More</div>
   <div class="mob-drawer-content">
+    <button class="btn btn-ghost" style="width:100%;justify-content:flex-start;gap:12px;padding:12px 16px" onclick="mobTab('headers');closeMobDrawers()">
+      <svg style="width:16px;height:16px;stroke:var(--primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/></svg>Headers
+    </button>
     <button class="btn btn-ghost" style="width:100%;justify-content:flex-start;gap:12px;padding:12px 16px" onclick="mobTab('ips');closeMobDrawers()">
-      <svg style="width:16px;height:16px;stroke:var(--primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>IP Forensics
+      <svg style="width:16px;height:16px;stroke:var(--primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>IP Forensics
     </button>
     <button class="btn btn-ghost" style="width:100%;justify-content:flex-start;gap:12px;padding:12px 16px" onclick="mobTab('report');closeMobDrawers()">
       <svg style="width:16px;height:16px;stroke:var(--primary);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Report &amp; Download
     </button>
     <div style="border-top:1px solid var(--border);padding-top:12px;margin-top:4px">
-      <div class="info-box">PhishGuard analyzes email headers, IPs, keywords and URLs for phishing indicators. Educational use only.</div>
+      <div class="info-box">PhishGuard analyzes email &amp; SMS messages for phishing indicators. Educational use only.</div>
     </div>
   </div>
 </div>
@@ -1058,11 +1096,30 @@ function downloadReport() {
 function printReport() { const f = document.getElementById('reportFrame'); if (f) f.contentWindow.print(); }
 
 // ── Mobile ────────────────────────────────────────
-const MOB_NAV_TABS = ['overview','headers','keywords','urls'];
+const MOB_NAV_TABS = ['overview','keywords','urls','sms'];
+
 function mobTab(name) {
   switchTab(name);
   MOB_NAV_TABS.forEach(t => { const btn = document.getElementById('mbn-'+t); if (btn) btn.classList.toggle('active', t===name); });
 }
+
+function mobSmsMode() {
+  mobTab('sms');
+  openMobInput();
+  mobDrawerMode('sms');
+}
+
+function mobDrawerMode(mode) {
+  const ec = document.getElementById('mobEmailContent');
+  const sc = document.getElementById('mobSmsContent');
+  ec.style.display = mode==='email' ? 'flex' : 'none';
+  ec.style.flexDirection = 'column';
+  sc.style.display = mode==='sms' ? 'flex' : 'none';
+  sc.style.flexDirection = 'column';
+  document.getElementById('mobModeEmailBtn').classList.toggle('active', mode==='email');
+  document.getElementById('mobModeSmsBtn').classList.toggle('active', mode==='sms');
+}
+
 function openMobInput() {
   const mob = document.getElementById('emlTextMob');
   if (emlText.value) mob.value = emlText.value;
@@ -1080,6 +1137,7 @@ function closeMobDrawers() {
   document.getElementById('mobInputDrawer').classList.remove('open');
   document.getElementById('mobMoreDrawer').classList.remove('open');
 }
+
 const fileInputMob = document.getElementById('fileInputMob');
 if (fileInputMob) {
   fileInputMob.addEventListener('change', e => {
@@ -1089,13 +1147,43 @@ if (fileInputMob) {
     r.readAsText(e.target.files[0]);
   });
 }
+
 function loadDemoMob() { loadDemo(); document.getElementById('emlTextMob').value = emlText.value; }
+
+function loadSmsMob() {
+  const samples = [
+    'URGENT: Your HDFC Bank account has been suspended. Verify now: http://hdfc-secure-login.xyz/verify',
+    'Congratulations! You won a $500 Amazon Gift Card. Claim: http://bit.ly/amzn-gift-2024',
+    'FedEx: Your package could not be delivered. Update info: http://fedex-delivery-update.ml/track',
+    'BANK ALERT: Unusual sign-in detected. Secure your account: http://secure-mybank.top/login',
+  ];
+  document.getElementById('smsMobText').value = samples[Math.floor(Math.random()*samples.length)];
+}
+
 function runMobAnalysis() {
   const mobVal = document.getElementById('emlTextMob').value.trim();
   if (mobVal) emlText.value = mobVal;
   closeMobDrawers();
   setTimeout(() => { runAnalysis(); mobTab('overview'); }, 300);
 }
+
+function runMobSmsAnalysis() {
+  const text = document.getElementById('smsMobText').value.trim();
+  if (!text) { alert('Please paste an SMS message first.'); return; }
+  const smsText = document.getElementById('smsText');
+  if (smsText) smsText.value = text;
+  const smsTextSidebar = document.getElementById('smsTextSidebar');
+  if (smsTextSidebar) smsTextSidebar.value = text;
+  closeMobDrawers();
+  setTimeout(() => {
+    const keywords = analyzeSmsKeywords(text);
+    const urls     = analyzeSmsURLs(text);
+    const risk     = calcSmsScore(keywords, urls, text);
+    document.getElementById('smsResults').innerHTML = renderSmsResults(text, keywords, urls, risk);
+    mobTab('sms');
+  }, 300);
+}
+
 emlText.addEventListener('input', () => { const mob = document.getElementById('emlTextMob'); if (mob) mob.value = emlText.value; });
 
 // Show mobile elements only on small screens
