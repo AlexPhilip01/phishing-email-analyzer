@@ -291,6 +291,56 @@ iframe.report-frame{width:100%;flex:1;border:none;background:#fff;min-height:0;d
 
 .no-findings{font-size:12.5px;color:var(--muted);font-style:italic;padding:4px 0}
 
+/* Mode toggle */
+.mode-toggle{display:flex;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:4px}
+.mode-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:8px 12px;border-radius:7px;font-size:12.5px;font-weight:600;
+  border:none;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;
+  color:var(--muted);background:transparent;
+}
+.mode-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.mode-btn.active{background:var(--white);color:var(--primary);box-shadow:var(--shadow-md);border:1px solid var(--primary-border)}
+.sms-analyzer{padding:0}
+.sms-header{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.sms-phone-wrap{display:flex;gap:24px;align-items:flex-start;margin-bottom:4px}
+.sms-phone{
+  width:180px;flex-shrink:0;
+  background:#1a1a2e;border-radius:24px;
+  padding:12px 8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25),0 0 0 2px #2d2d4e;
+}
+.sms-phone-top{display:flex;justify-content:center;margin-bottom:10px}
+.sms-phone-notch{width:50px;height:6px;background:#2d2d4e;border-radius:3px}
+.sms-phone-screen{background:#f0f0f0;border-radius:14px;padding:12px 10px;min-height:160px}
+.sms-from-label{font-size:10px;font-weight:600;color:var(--muted);text-align:center;margin-bottom:8px;font-family:'IBM Plex Mono',monospace}
+.sms-bubble{
+  background:#fff;border-radius:14px 14px 14px 2px;
+  padding:10px 12px;font-size:11px;line-height:1.6;color:var(--text);
+  box-shadow:0 1px 3px rgba(0,0,0,.1);word-break:break-word;
+  max-height:120px;overflow-y:auto;
+}
+.sms-input-col{flex:1;display:flex;flex-direction:column}
+
+/* SMS score hero */
+.sms-score-hero{
+  background:linear-gradient(135deg,#3b0764 0%,#4c1d95 40%,#312e81 100%);
+  border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+  box-shadow:var(--shadow-lg);width:100%;
+}
+.sms-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+
+/* SMS message type badge */
+.sms-type-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;
+  margin-bottom:12px;
+}
+.sms-type-smishing{background:var(--danger-light);color:var(--danger);border:1px solid var(--danger-border)}
+.sms-type-suspicious{background:var(--warn-light);color:var(--warn);border:1px solid var(--warn-border)}
+.sms-type-clean{background:var(--success-light);color:var(--success);border:1px solid var(--success-border)}
+
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
@@ -362,7 +412,7 @@ iframe.report-frame{width:100%;flex:1;border:none;background:#fff;min-height:0;d
     </div>
     <div>
       <div class="brand-name">Phish<span>Guard</span></div>
-      <div class="brand-tagline">Email Threat Analyzer</div>
+      <div class="brand-tagline">Email &amp; SMS Threat Analyzer</div>
     </div>
   </div>
   <div class="badge-online"><div class="badge-dot"></div><span>System Online</span></div>
@@ -370,40 +420,82 @@ iframe.report-frame{width:100%;flex:1;border:none;background:#fff;min-height:0;d
 
 <div class="layout">
   <div class="sidebar">
-    <div class="sidebar-section">
-      <div class="section-label">Upload .eml file</div>
-      <div class="upload-zone" id="uploadZone">
-        <input type="file" id="fileInput" accept=".eml,.txt">
-        <div class="upload-zone-icon">
-          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        </div>
-        <p>Drag &amp; drop your <b>.eml file</b><br>or click to browse</p>
+    <!-- Mode switcher -->
+    <div class="sidebar-section" style="padding:14px 16px">
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="modeEmailBtn" onclick="setMode('email')">
+          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Email
+        </button>
+        <button class="mode-btn" id="modeSmsBtn" onclick="setMode('sms')">
+          <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          SMS
+        </button>
       </div>
-      <div class="scan-bar" id="scanBar"></div>
     </div>
-    <div class="sidebar-section">
-      <div class="section-label">— or paste raw email —</div>
-      <textarea class="eml-input" id="emlText" placeholder="From: sender@domain.com
+
+    <!-- Email input panel -->
+    <div id="emailPanel">
+      <div class="sidebar-section">
+        <div class="section-label">Upload .eml file</div>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="fileInput" accept=".eml,.txt">
+          <div class="upload-zone-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <p>Drag &amp; drop your <b>.eml file</b><br>or click to browse</p>
+        </div>
+        <div class="scan-bar" id="scanBar"></div>
+      </div>
+      <div class="sidebar-section">
+        <div class="section-label">— or paste raw email —</div>
+        <textarea class="eml-input" id="emlText" placeholder="From: sender@domain.com
 To: recipient@domain.com
 Subject: Verify your account
 Reply-To: attacker@gmail.com
 Received: from 192.168.1.50 ...
 
 Email body goes here..."></textarea>
-    </div>
-    <div class="sidebar-section" style="display:flex;flex-direction:column;gap:8px">
-      <button class="btn btn-primary" id="analyzeBtn" onclick="runAnalysis()">
-        <svg style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        Analyze Email
-      </button>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-sample" style="flex:1" onclick="loadDemo()">Load Sample</button>
-        <button class="btn btn-ghost" style="flex:1" onclick="clearAll()">Clear</button>
+      </div>
+      <div class="sidebar-section" style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-primary" id="analyzeBtn" onclick="runAnalysis()">
+          <svg style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Analyze Email
+        </button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sample" style="flex:1" onclick="loadDemo()">Load Sample</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="clearAll()">Clear</button>
+        </div>
+      </div>
+      <div class="sidebar-section" style="flex:1">
+        <div class="section-label">About</div>
+        <div class="info-box">Analyzes email headers, routing IPs, phishing keywords, and suspicious URLs to produce a threat risk score. For educational and research use only.</div>
       </div>
     </div>
-    <div class="sidebar-section" style="flex:1">
-      <div class="section-label">About</div>
-      <div class="info-box">Analyzes email headers, routing IPs, phishing keywords, and suspicious URLs to produce a threat risk score. For educational and research use only.</div>
+
+    <!-- SMS input panel -->
+    <div id="smsPanel" style="display:none;flex-direction:column;flex:1">
+      <div class="sidebar-section">
+        <div class="section-label">Paste SMS message</div>
+        <textarea class="eml-input" id="smsTextSidebar" rows="8" placeholder="Paste suspicious text message here...
+
+Example:
+URGENT: Your bank account has been suspended. Verify now: http://bit.ly/secure-bank"></textarea>
+      </div>
+      <div class="sidebar-section" style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn btn-primary" onclick="runSmsFromSidebar()">
+          <svg style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Analyze SMS
+        </button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-sample" style="flex:1" onclick="loadSmsSidebar()">Load Sample</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="clearSmsSidebar()">Clear</button>
+        </div>
+      </div>
+      <div class="sidebar-section" style="flex:1">
+        <div class="section-label">About SMS Analysis</div>
+        <div class="info-box">Detects smishing patterns including suspicious links, urgency tactics, brand impersonation, and financial lures in text messages.</div>
+      </div>
     </div>
   </div>
 
@@ -427,13 +519,16 @@ Email body goes here..."></textarea>
       <div class="tab" onclick="switchTab('report')">
         <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Report
       </div>
+      <div class="tab" onclick="switchTab('sms')">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>SMS Smishing
+      </div>
     </div>
     <div class="content">
       <div class="tab-pane active" id="pane-overview">
         <div class="empty-state" id="emptyState">
           <div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-          <h3>No email analyzed yet</h3>
-          <p>Upload a .eml file or paste raw email source, then click <strong>Analyze Email</strong> to begin.</p>
+          <h3>No analysis yet</h3>
+          <p>Choose <strong>Email</strong> or <strong>SMS</strong> in the sidebar, paste your content, then click Analyze.</p>
         </div>
         <div id="overviewResults" style="display:none;flex:1"></div>
       </div>
@@ -442,6 +537,44 @@ Email body goes here..."></textarea>
       <div class="tab-pane" id="pane-keywords"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg></div><h3>Run analysis first</h3><p>Keyword detection results will appear here.</p></div></div>
       <div class="tab-pane" id="pane-urls"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></div><h3>Run analysis first</h3><p>URL scan results will appear here.</p></div></div>
       <div class="tab-pane" id="pane-report"><div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><h3>Run analysis first</h3><p>Downloadable report will appear here.</p></div></div>
+      <div class="tab-pane" id="pane-sms">
+        <div class="sms-analyzer">
+          <div class="sms-input-area">
+            <div class="sms-header">
+              <div class="card-header-icon icon-purple" style="width:34px;height:34px;border-radius:9px"><svg viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:17px;height:17px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+              <div>
+                <h2 style="font-size:15px;font-weight:700;color:var(--text)">SMS Smishing Analyzer</h2>
+                <p style="font-size:12px;color:var(--muted);margin-top:2px">Paste a suspicious text message to detect smishing attempts</p>
+              </div>
+            </div>
+            <div class="sms-phone-wrap">
+              <div class="sms-phone">
+                <div class="sms-phone-top"><div class="sms-phone-notch"></div></div>
+                <div class="sms-phone-screen">
+                  <div class="sms-from-label">Unknown Number</div>
+                  <div class="sms-bubble" id="smsBubblePreview">Your message will appear here...</div>
+                </div>
+              </div>
+              <div class="sms-input-col">
+                <div class="section-label" style="margin-bottom:8px">Paste SMS message</div>
+                <textarea class="eml-input" id="smsText" rows="7" placeholder="Example:
+ALERT: Your bank account has been suspended. Click here to verify: http://bit.ly/secure-bank
+
+Or: You've won a $1000 gift card! Claim now: http://prize-claim.xyz/win?id=9482"></textarea>
+                <div style="display:flex;gap:8px;margin-top:10px">
+                  <button class="btn btn-primary" style="flex:2" onclick="runSmsAnalysis()">
+                    <svg style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    Analyze SMS
+                  </button>
+                  <button class="btn btn-sample" style="flex:1" onclick="loadSmsDemo()">Load Sample</button>
+                  <button class="btn btn-ghost" style="flex:1" onclick="clearSms()">Clear</button>
+                </div>
+              </div>
+            </div>
+            <div id="smsResults" style="margin-top:20px"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -519,7 +652,8 @@ Email body goes here..."></textarea>
 </div>
 
 <script>
-const TABS = ['overview','headers','ips','keywords','urls','report'];
+// ── SMS Smishing Analyzer ──────────────────────────
+const TABS = ['overview','headers','ips','keywords','urls','report','sms'];
 
 function switchTab(name) {
   document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', TABS[i] === name));
@@ -974,6 +1108,227 @@ function updateMobileVisibility() {
 }
 updateMobileVisibility();
 window.addEventListener('resize', updateMobileVisibility);
+
+// ── Mode switching ─────────────────────────────────
+let currentMode = 'email';
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('emailPanel').style.display = mode === 'email' ? 'flex' : 'none';
+  document.getElementById('emailPanel').style.flexDirection = 'column';
+  document.getElementById('smsPanel').style.display = mode === 'sms' ? 'flex' : 'none';
+  document.getElementById('modeEmailBtn').classList.toggle('active', mode === 'email');
+  document.getElementById('modeSmsBtn').classList.toggle('active', mode === 'sms');
+  if (mode === 'sms') {
+    switchTab('sms');
+  } else {
+    switchTab('overview');
+  }
+}
+
+function loadSmsSidebar() {
+  const samples = [
+    'URGENT: Your HDFC Bank account has been temporarily suspended. Verify immediately: http://hdfc-secure-login.xyz/verify?id=8821',
+    'Congratulations! You\'ve been selected for a $500 Amazon Gift Card. Claim before it expires: http://bit.ly/amzn-gift-2024',
+    'Your FedEx package could not be delivered. Update delivery info: http://fedex-delivery-update.ml/track',
+    'BANK ALERT: Unusual sign-in on your account. Secure it now: http://secure-mybank.top/login',
+  ];
+  const s = samples[Math.floor(Math.random() * samples.length)];
+  document.getElementById('smsTextSidebar').value = s;
+  // sync to sms tab textarea too
+  const smsText = document.getElementById('smsText');
+  if (smsText) smsText.value = s;
+}
+
+function clearSmsSidebar() {
+  document.getElementById('smsTextSidebar').value = '';
+  const smsText = document.getElementById('smsText');
+  if (smsText) smsText.value = '';
+  document.getElementById('smsResults').innerHTML = '';
+}
+
+function runSmsFromSidebar() {
+  const text = document.getElementById('smsTextSidebar').value.trim();
+  if (!text) { alert('Please paste an SMS message first.'); return; }
+  // sync to sms tab
+  const smsText = document.getElementById('smsText');
+  if (smsText) smsText.value = text;
+  // run analysis
+  const keywords = analyzeSmsKeywords(text);
+  const urls     = analyzeSmsURLs(text);
+  const risk     = calcSmsScore(keywords, urls, text);
+  switchTab('sms');
+  document.getElementById('smsResults').innerHTML = renderSmsResults(text, keywords, urls, risk);
+}
+
+
+
+// Live preview in phone bubble
+document.getElementById('smsText').addEventListener('input', function() {
+  const preview = document.getElementById('smsBubblePreview');
+  preview.textContent = this.value.trim() || 'Your message will appear here...';
+});
+
+function loadSmsDemo() {
+  const samples = [
+    `URGENT: Your HDFC Bank account has been temporarily suspended due to suspicious activity. Verify immediately: http://hdfc-secure-login.xyz/verify?id=8821`,
+    `Congratulations! You've been selected for a $500 Amazon Gift Card. Click to claim before it expires: http://bit.ly/amzn-gift-2024`,
+    `Your package from FedEx could not be delivered. Update your delivery info here: http://fedex-delivery-update.ml/track`,
+    `BANK ALERT: Unusual sign-in detected on your account. If this was not you, secure your account now: http://secure-mybank.top/login`,
+  ];
+  const s = samples[Math.floor(Math.random() * samples.length)];
+  document.getElementById('smsText').value = s;
+  document.getElementById('smsBubblePreview').textContent = s;
+}
+
+function clearSms() {
+  document.getElementById('smsText').value = '';
+  document.getElementById('smsBubblePreview').textContent = 'Your message will appear here...';
+  document.getElementById('smsResults').innerHTML = '';
+}
+
+function analyzeSmsKeywords(text) {
+  const low = text.toLowerCase();
+  const cats = {
+    urgency: ['urgent','immediately','expire','act now','limited time','24 hours','48 hours','before it expires','right now','last chance','don\'t delay','hurry','today only'],
+    financial: ['prize','won','winner','gift card','reward','cash','free','claim','$','€','£','bitcoin','payment','refund','lottery','selected','congratulations'],
+    threat: ['suspended','blocked','locked','unusual activity','suspicious','security alert','breach','compromised','deactivated','closed','frozen','detected'],
+    impersonation: ['amazon','fedex','ups','dhl','bank','paypal','apple','google','microsoft','irs','hmrc','gov','police','court','netflix','facebook','whatsapp','instagram'],
+    credential: ['verify','confirm','update your','click here','log in','sign in','enter your','account details','pin','password','otp','code'],
+  };
+  const found = {};
+  Object.entries(cats).forEach(([cat, words]) => {
+    const h = words.filter(w => low.includes(w));
+    if (h.length) found[cat] = h;
+  });
+  return found;
+}
+
+function analyzeSmsURLs(text) {
+  const urls = [...new Set((text.match(/https?:\/\/[^\s]+/gi)||[])
+    .concat((text.match(/\b(?!www\.)([a-z0-9-]+\.(?:xyz|tk|ml|ga|cf|gq|top|pw|ru|click|link|online|site|live|club|shop|info))[^\s]*/gi)||[]))
+  )];
+  return urls.map(url => {
+    const flags = [];
+    const domain = url.replace(/https?:\/\//,'').split(/[/?#]/)[0];
+    const suspTlds = ['.xyz','.tk','.ml','.ga','.cf','.gq','.top','.pw','.ru','.click','.link','.online','.site','.live','.club','.shop'];
+    if (suspTlds.some(t => ('.'+domain.split('.').slice(-1)[0]).includes(t.slice(1)))) flags.push('Suspicious TLD');
+    if (['bit.ly','tinyurl','t.co','ow.ly','goo.gl','is.gd','buff.ly','rb.gy','cutt.ly'].some(s=>domain.includes(s))) flags.push('URL shortener — hides true destination');
+    if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(domain)) flags.push('IP address instead of domain name');
+    if ((domain.match(/\./g)||[]).length > 3) flags.push('Excessive subdomains');
+    if (url.includes('verify')||url.includes('secure')||url.includes('login')||url.includes('update')) flags.push('Credential-harvesting path');
+    const brands = ['amazon','fedex','ups','dhl','paypal','apple','google','microsoft','bank','hdfc','chase','wells','barclays','netflix'];
+    const brand = brands.find(b => domain.includes(b));
+    if (brand && !new RegExp('^'+brand+'\\.com$').test(domain)) flags.push(`Impersonates "${brand}" — not official domain`);
+    if (url.length > 80) flags.push('Unusually long URL');
+    return { url, domain, flags };
+  });
+}
+
+function calcSmsScore(keywords, urls, text) {
+  let s = 0;
+  const w = { urgency:8, financial:10, threat:12, impersonation:15, credential:10 };
+  Object.entries(keywords).forEach(([cat, words]) => { s += Math.min(words.length * (w[cat]||5), 20); });
+  urls.forEach(u => { s += Math.min(u.flags.length * 12, 30); });
+  // Short message with a URL = very common smishing pattern
+  const wordCount = text.trim().split(/\s+/).length;
+  if (wordCount < 30 && urls.length > 0) s += 15;
+  // No sender name + URL = suspicious
+  if (urls.length > 0 && !text.match(/^(from|dear|hi|hello)/i)) s += 5;
+  s = Math.min(s, 100);
+  return { score: s, level: s>=60?'HIGH':s>=30?'MEDIUM':'LOW' };
+}
+
+function renderSmsResults(text, keywords, urls, risk) {
+  const { score, level } = risk;
+  const color = level==='HIGH'?'#be123c':level==='MEDIUM'?'#b45309':'#15803d';
+  const circ = 2*Math.PI*36, dash = (score/100)*circ;
+
+  const typeLabel = level==='HIGH'?'Smishing Detected':level==='MEDIUM'?'Suspicious Message':'Appears Clean';
+  const typeClass = level==='HIGH'?'sms-type-smishing':level==='MEDIUM'?'sms-type-suspicious':'sms-type-clean';
+
+  const allFindings = [
+    ...Object.entries(keywords).map(([cat,words])=>({text:`${words.length} ${cat} indicator(s): ${words.slice(0,3).join(', ')}${words.length>3?'…':''}`,severity:cat==='threat'||cat==='impersonation'?'high':cat==='financial'?'high':'medium'})),
+    ...urls.filter(u=>u.flags.length).map(u=>({text:`Suspicious link: ${u.domain} — ${u.flags[0]}`,severity:'high'})),
+    ...(text.trim().split(/\s+/).length < 30 && urls.length > 0 ? [{text:'Very short message with a link — classic smishing pattern',severity:'high'}] : []),
+  ];
+
+  const dotCol = sev => sev==='high'?'#be123c':'#b45309';
+  const findings = allFindings.length
+    ? allFindings.map(f=>`<div class="finding-row"><div class="finding-dot" style="background:${dotCol(f.severity)}"></div><div class="finding-text">${f.text}</div><div class="sev-badge sev-${f.severity}">${f.severity}</div></div>`).join('')
+    : '<p class="no-findings">No smishing indicators detected — message appears legitimate.</p>';
+
+  const urlRows = urls.length
+    ? urls.map(u=>`<div class="url-row"><div class="url-status-icon ${u.flags.length?'warn':'ok'}">${icon(u.flags.length?'x':'check')}</div><div class="url-text ${u.flags.length?'':'clean'}">${u.url}</div>${u.flags.length?`<div class="url-flags">${u.flags.map(f=>`<span class="uflag">${f}</span>`).join('')}</div>`:'<span style="font-size:11px;color:var(--success);font-weight:500;flex-shrink:0">Clean</span>'}</div>`).join('')
+    : '<p class="no-findings">No URLs detected in message.</p>';
+
+  const kwCatMeta = {urgency:{label:'Urgency',cls:'icon-red',ico:'clock'},financial:{label:'Financial',cls:'icon-yellow',ico:'dollar'},threat:{label:'Threat',cls:'icon-red',ico:'zap'},impersonation:{label:'Impersonation',cls:'icon-red',ico:'warning'},credential:{label:'Credential',cls:'icon-indigo',ico:'key'}};
+  const kwCards = Object.keys(keywords).length
+    ? Object.entries(keywords).map(([cat,words])=>{const m=kwCatMeta[cat]||{label:cat,cls:'icon-purple',ico:'type'};return`<div class="card"><div class="card-header"><div class="card-header-icon ${m.cls}">${icon(m.ico)}</div><h3>${m.label}</h3><div class="count">${words.length}</div></div><div class="card-body"><div class="chip-wrap">${words.map(w=>`<span class="chip chip-${cat==='impersonation'?'threat':cat}">${w}</span>`).join('')}</div></div></div>`;}).join('')
+    : '<p class="no-findings" style="padding:16px">No suspicious keywords found.</p>';
+
+  return `
+    <div class="sms-score-hero">
+      <div class="score-ring">
+        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="8"/>
+          <circle cx="40" cy="40" r="36" fill="none" stroke="${color}" stroke-width="8" stroke-dasharray="${dash.toFixed(1)} ${circ.toFixed(1)}" stroke-linecap="round"/>
+        </svg>
+        <div class="score-num">${score}</div>
+      </div>
+      <div class="score-details" style="z-index:1">
+        <h2 style="font-size:18px;font-weight:700;color:#fff">Risk Score: ${score}/100</h2>
+        <p style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px">${allFindings.length} indicator(s) detected</p>
+        <p style="font-size:11px;color:rgba(255,255,255,.45);margin-top:5px;font-family:'IBM Plex Mono',monospace">${urls.length} URL(s) · ${Object.values(keywords).flat().length} keyword(s)</p>
+      </div>
+      <div class="risk-pill risk-${level}" style="z-index:1">${level} RISK</div>
+    </div>
+
+    <div class="sms-stats">
+      <div class="stat-card"><div class="stat-icon">${icon('type')}</div><div class="stat-val">${Object.values(keywords).flat().length}</div><div class="stat-label">Keywords found</div></div>
+      <div class="stat-card"><div class="stat-icon">${icon('link')}</div><div class="stat-val">${urls.length}</div><div class="stat-label">URLs detected</div></div>
+      <div class="stat-card"><div class="stat-icon">${icon('warning')}</div><div class="stat-val">${allFindings.length}</div><div class="stat-label">Threat indicators</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-header-icon icon-red">${icon('warning')}</div><h3>Smishing Indicators</h3><div class="count">${allFindings.length} found</div></div>
+      <div class="card-body">${findings}</div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-header-icon icon-yellow">${icon('link')}</div><h3>Links in Message</h3><div class="count">${urls.length} found</div></div>
+      <div class="card-body" style="gap:6px">${urlRows}</div>
+    </div>
+
+    ${kwCards}
+
+    <div class="card">
+      <div class="card-header"><div class="card-header-icon icon-purple">${icon('shield')}</div><h3>What to do</h3></div>
+      <div class="card-body">
+        ${level==='HIGH'?`
+          <div class="alert alert-danger"><div class="alert-icon">${icon('warning')}</div><span><strong>Do not click any links.</strong> This is almost certainly a smishing (SMS phishing) attack. Delete the message immediately and block the sender.</span></div>
+          <div style="font-size:12.5px;color:var(--text);line-height:1.7;margin-top:8px">
+            <strong>Steps to take:</strong><br>
+            1. Do not reply or call any number in the message<br>
+            2. Do not enter any personal or financial information<br>
+            3. Report to your carrier by forwarding to <strong>7726 (SPAM)</strong><br>
+            4. Report to your national cybercrime authority<br>
+            5. Block the sender number
+          </div>` :
+        level==='MEDIUM'?`
+          <div class="alert alert-danger" style="background:var(--warn-light);border-color:var(--warn-border);color:#92400e"><div class="alert-icon" style="stroke:#b45309">${icon('warning')}</div><span>This message shows some suspicious signs. Verify by contacting the company directly through their official website — do not use links in the message.</span></div>` :
+        `<p style="font-size:12.5px;color:var(--text);line-height:1.7">No major smishing indicators detected. Always remain cautious with unexpected messages, especially those asking for personal information or containing links.</p>`}
+      </div>
+    </div>`;
+}
+
+function runSmsAnalysis() {
+  const text = document.getElementById('smsText').value.trim();
+  if (!text) { alert('Please paste an SMS message first.'); return; }
+  const keywords = analyzeSmsKeywords(text);
+  const urls     = analyzeSmsURLs(text);
+  const risk     = calcSmsScore(keywords, urls, text);
+  document.getElementById('smsResults').innerHTML = renderSmsResults(text, keywords, urls, risk);
+}
 </script>
 </body>
 </html>
